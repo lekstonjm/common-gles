@@ -1,4 +1,5 @@
 common-gles
 ===============
-Tutorial framework common to X11 and Android (native)  to investigate gles technologies 
-Require glm library
+Common X11 and Android (native)  framework  dedicated to  gles technologies investigations
+
+Require glm library https://github.com/g-truc/glm
