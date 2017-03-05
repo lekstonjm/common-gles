@@ -1,4 +1,4 @@
-simple triangle
+common-gles
 ===============
-Creer un environnement de developpement hybride android x11 sur les technos gles
-
+Tutorial framework common to X11 and Android (native)  to investigate gles technologies 
+Require glm library
