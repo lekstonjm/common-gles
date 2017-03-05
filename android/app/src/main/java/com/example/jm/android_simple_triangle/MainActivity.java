@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
         // Example of a call to a native method
         //TextView tv = (TextView) findViewById(R.id.sample_text);
         //tv.setText(stringFromJNI());
+        nativeStartup();
+
         renderer_handler = nativeCreateRenderer(
                 getClass().getClassLoader(),
                 this.getApplicationContext());
@@ -41,10 +43,13 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSurfaceChanged(GL10 gl, int width, int height) {}
+                    public void onSurfaceChanged(GL10 gl, int width, int height) {
+                        nativeSetViewport(renderer_handler, width, height);
+                    }
 
                     @Override
                     public void onDrawFrame(GL10 gl) {
+
                         nativeDrawFrame(renderer_handler);
                     }
                 });
@@ -64,13 +69,15 @@ public class MainActivity extends AppCompatActivity {
          * A native method that is implemented by the 'native-lib' native library,
          * which is packaged with this application.
          */
-    private native long nativeCreateRenderer(
-            ClassLoader appClassLoader, Context context);
+    private native void nativeStartup();
 
+    private native long nativeCreateRenderer(ClassLoader appClassLoader, Context context);
 
     private native void nativeInitializeGl(long renderer_handler);
 
     private native long nativeDrawFrame(long renderer_handler);
+
+    private native void nativeSetViewport(long renderer_handler, int width, int height);
 
     private native void nativeDestroyRenderer(long renderer_handler);
 }

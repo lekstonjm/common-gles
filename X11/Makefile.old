@@ -1,0 +1,15 @@
+all: simple_triangle
+
+Renderer.o:../src/Renderer.cpp ../src/Renderer.h
+	g++  -c -fPIC -std=c++11 -Wall -Wextra -pedantic ../src/Renderer.cpp   -I../src -I/home/jm/glm -lX11 -lEGL -lGLESv2 -o Renderer.o
+
+Renderer.so: Renderer.o
+	g++ -shared -o Renderer.so Renderer.o
+
+simple_triangle: Renderer.so main.cpp
+	g++  -std=c++11 -Wall -Wextra -pedantic main.cpp Renderer.so  -I../src -I/home/jm/glm -lX11 -lEGL -lGLESv2 -o simple_triangle
+
+.PHONY: clean
+
+clean:
+	rm -f *.o  simple_triangle

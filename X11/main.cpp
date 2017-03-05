@@ -9,7 +9,11 @@
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 
-#include "Renderer.h"
+#include <IRendererFactory.h>
+#include <IRenderer.h>
+#include <Context.h>
+
+#include "Bootstrap.h"
 
 // Name of the application
 const char* ApplicationName       = "Simple Triangle";
@@ -330,7 +334,7 @@ void releaseNativeResources(Display* nativeDisplay, Window nativeWindow)
 	if (nativeDisplay){	XCloseDisplay(nativeDisplay);	}
 }
 
-bool renderScene(Renderer *renderer, EGLDisplay eglDisplay, EGLSurface eglSurface, Display* nativeDisplay)
+bool renderScene(Common::IRenderer *renderer, EGLDisplay eglDisplay, EGLSurface eglSurface, Display* nativeDisplay)
 {
 	//renderer.DrawFrame();
 	//	Present the display data to the screen.
@@ -382,7 +386,10 @@ int main(int /*argc*/, char** /*argv*/)
 	EGLConfig			eglConfig = NULL;
 	EGLSurface			eglSurface = NULL;
 	EGLContext			eglContext = NULL;
-	Renderer *renderer = NULL;
+	Common::IRenderer *renderer = NULL;
+
+	Bootstrap::Startup();
+
 	// Get access to a native display
 	if (!createNativeDisplay(&nativeDisplay)){ goto cleanup;	}
 
@@ -407,7 +414,7 @@ int main(int /*argc*/, char** /*argv*/)
 		goto cleanup;
 	}
 
-	renderer = new Renderer();
+	renderer = Common::Context::Instance()->GetRendererFactory()->Create();
 
 	renderer->InitializeGl();
 	renderer->SetViewport(WindowWidth,WindowHeight);

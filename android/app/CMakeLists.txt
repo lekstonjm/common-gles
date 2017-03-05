@@ -3,11 +3,31 @@
 # value of 3.4.0 or lower.
 
 cmake_minimum_required(VERSION 3.4.1)
+set(CMAKE_CXX_FLAGS  "-Wall -std=c++11")
+set(ROOT_PATH "../..")
+set(COMMON_PATH ${ROOT_PATH}/common)
+set(TRIANGLE_PATH ${ROOT_PATH}/triangle)
+set(NATIVE_PATH "src/main/cpp")
 
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds it for you.
-# Gradle automatically packages shared libraries with your APK.
+find_library(glm-lib glm)
+find_library (egl-lib  EGL)
+find_library (gles-lib  GLESv2)
+find_library (android-lib  android)
+
+include_directories("/usr/local/include")
+
+include_directories(${ROOT_PATH})
+
+include_directories(${COMMON_PATH})
+add_library(common-lib ${COMMON_PATH}/Context.cpp)
+
+include_directories(${TRIANGLE_PATH})
+add_library(triangle-lib
+            ${TRIANGLE_PATH}/Renderer.cpp
+            ${TRIANGLE_PATH}/RendererFactory.cpp)
+target_link_libraries(triangle-lib ${egl-lib})
+target_link_libraries(triangle-lib ${gles-lib})
+
 
 add_library( # Sets the name of the library.
              native-lib
@@ -18,10 +38,11 @@ add_library( # Sets the name of the library.
              # Provides a relative path to your source file(s).
              # Associated headers in the same location as their source
              # file are automatically included.
-             src/main/cpp/native-lib.cpp
-             src/main/cpp/Renderer.h
-             src/main/cpp/Renderer.cpp
+             ${NATIVE_PATH}/native-lib.cpp
+             ${NATIVE_PATH}/Bootstrap.cpp
              )
+add_dependencies(native-lib common-lib)
+add_dependencies(native-lib triangle-lib)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because system libraries are included in the search path by
@@ -39,7 +60,7 @@ find_library( # Sets the name of the path variable.
 find_library (android-lib  android)
 find_library (egl-lib    EGL)
 find_library (gles-lib   GLESv2)
-
+find_library (glm-lib    glm)
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in the
 # build script, prebuilt third-party libraries, or system libraries.
@@ -49,8 +70,10 @@ target_link_libraries( # Specifies the target library.
 
                        # Links the target library to the log library
                        # included in the NDK.
-                       ${log-lib} )
+                       ${log-lib})
 
 target_link_libraries(native-lib ${android-lib})
 target_link_libraries(native-lib ${egl-lib})
 target_link_libraries(native-lib ${gles-lib})
+target_link_libraries(native-lib common-lib)
+target_link_libraries(native-lib triangle-lib)

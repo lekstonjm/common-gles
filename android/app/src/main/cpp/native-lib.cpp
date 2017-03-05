@@ -1,6 +1,9 @@
 #include <jni.h>
-
-#include "Renderer.h" // NOLINT
+#include <cstdint>
+#include "Bootstrap.h"
+#include <Context.h>
+#include <IRendererFactory.h>
+#include <IRenderer.h>
 
 #define JNI_METHOD(return_type, method_name) \
   JNIEXPORT return_type JNICALL              \
@@ -8,25 +11,27 @@
 
 namespace {
 
-    inline jlong jptr(Renderer *renderer) {
+    inline jlong jptr(Common::IRenderer *renderer) {
         return reinterpret_cast<intptr_t>(renderer);
     }
 
-    inline Renderer *native(jlong ptr) {
-        return reinterpret_cast<Renderer *>(ptr);
+    inline Common::IRenderer *native(jlong ptr) {
+        return reinterpret_cast<Common::IRenderer *>(ptr);
     }
 }  // anonymous namespace
 
 
 extern "C" {
 
-JNI_METHOD(jlong, nativeCreateRenderer )
-( JNIEnv *
-        , jclass
-        , jobject
-        , jobject) {
+JNI_METHOD(void, nativeStartup)
+(JNIEnv *, jobject ) {
+    Bootstrap::Startup();
+}
 
-return jptr(new Renderer( )) ;
+JNI_METHOD(jlong, nativeCreateRenderer )
+( JNIEnv *, jobject) {
+
+return jptr(Common::Context::Instance()->GetRendererFactory()->Create()) ;
 }
 
 
@@ -35,16 +40,20 @@ JNI_METHOD(void, nativeInitializeGl)
     native(renderer_handler)->InitializeGl();
 }
 
+JNI_METHOD(void, nativeSetViewport)
+(JNIEnv *, jclass , jlong renderer_handler, int width, int height) {
+    native(renderer_handler)->SetViewport(width, height);
+}
+
 JNI_METHOD(void, nativeDrawFrame)
-        (JNIEnv *, jobject , jlong renderer_handler) {
+(JNIEnv *, jobject , jlong renderer_handler) {
     native(renderer_handler)->DrawFrame();
 }
 
 JNI_METHOD(void, nativeDestroyRenderer)
-        (JNIEnv *, jclass , jlong renderer_handler) {
+(JNIEnv *, jclass , jlong renderer_handler) {
     native(renderer_handler)->ReleaseGl();
     delete native(renderer_handler);
 }
-
 
 }
