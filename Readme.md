@@ -14,5 +14,8 @@ X11 Commpilation
 
 Android Compilation
 ----------------
-* Using android studio open the android folder synchronize and build it
+The easiest way is android studio 
+* open the android folder
+* synchronize and build it
+* deploie the apk on your device
 
