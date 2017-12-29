@@ -14,11 +14,12 @@ find_library (egl-lib  EGL)
 find_library (gles-lib  GLESv2)
 find_library (android-lib  android)
 
-include_directories("/usr/local/include")
-
 include_directories(${ROOT_PATH})
-
+include_directories(${ROOT_PATH})
+include_directories("/usr/local/include")
 include_directories(${COMMON_PATH})
+
+
 add_library(common-lib ${COMMON_PATH}/Context.cpp)
 
 include_directories(${TRIANGLE_PATH})
